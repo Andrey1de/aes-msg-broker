@@ -12,7 +12,7 @@
 *.map
 *.js
 /dist
-
+.env
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
