@@ -18,7 +18,7 @@
     "name": "Andrey Dergachev @2021 <andrey1de@gmail.com>"
   },
   "license": "MIT",
-  "main": "app.js",
+  "main": "dist/app.js",
   "dependencies": {
     "@types/pg": "^7.14.11",
     "cors": "^2.8.5",

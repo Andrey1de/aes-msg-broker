@@ -1,5 +1,5 @@
 import { StoreDto } from './store-dto';
-import { Env } from '../env/env';
+import * as Env from '../enviro/enviro';
 
 const DB_SCHEMA = Env.DB_SCHEMA;
 

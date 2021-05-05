@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "lib": [ "es2017" ],
-    "module": "commonjs",
-    "outDir": "./dist",
-    "strict": false,
     "downlevelIteration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-
-    "sourceMap": true
+    "lib": [ "es2017" ],
+    "module": "commonjs",
+    "outDir": "./dist",
+    "sourceMap": true,
+    "strict": false,
+    "target": "es2015"
   },
   "exclude": [
     "node_modules",

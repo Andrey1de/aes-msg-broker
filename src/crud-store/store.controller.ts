@@ -1,15 +1,16 @@
 import express = require('express');
 
-import { PoolClient } from 'pg';
+
 
 import { Request, Response } from 'express';
 import * as S from '../common/http-status';
-import {DbServer as DB} from '../servers/db.server';
-import {Env} from '../env/env';
+import * as Env from '../enviro/enviro';
 import { SqlFactory } from './sql-factory';
 import  {StoreDto} from './store-dto'
 //import { loggers } from 'winston';
 //import { from } from 'rxjs';
+import * as pg from 'pg';
+import { Pool, PoolClient } from 'pg';
 
 enum EGuard {
 	Zero = 0,
@@ -26,6 +27,8 @@ function logSqlRes(verb: string, g:GuardParams , arr:StoreDto[]){
 
 
 }
+
+
 
 class GuardParams {
 
@@ -94,7 +97,10 @@ class GuardParams {
 
 }
 
-export  class StoreController {
+export class StoreController {
+
+	//public static readonly Pool: pg.Pool = und;
+
 
     public async Get(req: Request,  res: Response) {
 		let Client:PoolClient =undefined!;
@@ -106,7 +112,7 @@ export  class StoreController {
 			return;
 		}
       //TODO if p.Key exists = Action on one row
-            Client = await DB.Pool.connect();
+            Client = await Env.Pool.connect();
 
             const sql = SqlFactory.Get(p.queue,p.kind,p.key);
             const { rows } = await Client.query(sql);
@@ -131,7 +137,7 @@ export  class StoreController {
 			return;
 		}
       //TODO if p.Key exists = Action on one row
-            Client = await DB.Pool.connect();
+            Client = await Env.Pool.connect();
 
             const sql = SqlFactory.Delete(p.queue,p.kind,p.key);
             const { rows } = await Client.query(sql);
@@ -161,7 +167,7 @@ export  class StoreController {
 		
 			}
       //TODO if p.Key exists = Action on one row
-             Client = await DB.Pool.connect();
+             Client = await Env.Pool.connect();
 			const row: StoreDto = new StoreDto(body);
 			row.kind =  p.kind;
 			row.key =  p.key;
@@ -192,7 +198,7 @@ export  class StoreController {
 			const body = p.body.data || p.body;
 			//
       //TODO if p.Key exists = Action on one row
-            Client = await DB.Pool.connect();
+            Client = await Env.Pool.connect();
 			const row: StoreDto = new StoreDto(body);
 			row.kind =  p.kind;
 			row.key =  p.key;

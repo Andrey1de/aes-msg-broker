@@ -1,7 +1,8 @@
 import * as EX  from 'express';
 import { AddressInfo } from "net";
 import * as path from 'path';
-import { AppServer } from './servers/app.server'
+import { AppServer } from './servers/app.server';
+import * as Env from './enviro/enviro';
 const app: EX.Express = EX();
  //Main creation process ---------------
 try {
@@ -16,8 +17,8 @@ try {
 console.log('aes-msg-broker Initialization processed sucessfully ....');
 //import users from './routes/user';
 
-const debug = require('debug')('aes-msg-broker');
-debug()
+//const debug = require('debug')('aes-msg-broker');
+//debug()
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,6 +26,9 @@ app.set('view engine', 'pug');
 
 app.use(EX.static(path.join(__dirname, 'public')));
 
+app.get('/', (req: EX.Request, res: EX.Response) => {
+    res.render('index', { title: 'Express' });
+});
 //app.use('/users', users);
 
 // catch 404 and forward to error handler
@@ -67,8 +71,8 @@ app.use((err:any, req: EX.Request, res : EX.Response, next:any) => { // eslint-d
 //        }).on('error', (err: Object) => reject(err));
 //    });
 //}
-app.set('port', process.env.PORT || 3000);
-const server = app.listen(app.get('port'), function () {
+app.set('port', Env.PORT);
+const server = app.listen(Env.PORT, function () {
     console.log(`Express server listening on port ${(server.address() as AddressInfo).port}`);
 });
 
