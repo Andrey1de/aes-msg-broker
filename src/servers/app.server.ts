@@ -52,12 +52,14 @@ export class AppServer{
             process.env.POSTGRESS_LOCAL_CONNECTION_STRING;
         Env.set_DB_CONNECTION_STRING(connString);
         
-         const is_heroku: boolean = (process.env.IS_HEROKU == 'YES') ||
-        (!process.env.IS_HEROKU && !process.env.POSTGRESS_LOCAL_CONNECTION_STRING)
+        const is_heroku: boolean = (process.env.IS_HEROKU == 'YES') ||
+            (!process.env.IS_HEROKU && !process.env.POSTGRESS_LOCAL_CONNECTION_STRING);
 
-        Env.set_IS_HEROKU(is_heroku)
+        Env.set_IS_HEROKU(is_heroku);
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-        console.log(`IS_HEROKU::${Env.IS_HEROKU}\n::Env(DB_:: ${Env.DB_CONNECTION_STRING})`)
+        console.log(`IS_HEROKU::${Env.IS_HEROKU}::Env(DB_:: ${Env.DB_CONNECTION_STRING})`);
+        console.log(`printenv :NODE_TLS_REJECT_UNAUTHORIZED=${process.env.NODE_TLS_REJECT_UNAUTHORIZED}`);
 		    //'postgresql://postgres:1q1q@127.0.0.1:5432/clouddata';
 
       
