@@ -12,6 +12,8 @@
 *.map
 *.js
 /dist
+/log
+/logs
 .env
 
 # User-specific files (MonoDevelop/Xamarin Studio)

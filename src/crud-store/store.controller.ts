@@ -1,63 +1,37 @@
-import express = require('express');
-
-
-
 import { Request, Response } from 'express';
 import * as S from '../common/http-status';
-import * as Env from '../enviro/enviro';
 import { SqlFactory } from './sql-factory';
 import  {StoreDto} from './store-dto'
-//import { loggers } from 'winston';
-//import { from } from 'rxjs';
-import * as pg from 'pg';
-import { Pool, PoolClient } from 'pg';
-import { PreHandleRequest } from './pre-handle-request';
+import { StoreRequestHandler } from './store-request-handler';
 import { EGuard } from './e-guard';
+import { TaskMachine} from './task-machine'
 
-
-function logSqlRes(verb: string, p:PreHandleRequest , arr:StoreDto[]){
-	const strLog = `${verb.toUpperCase()}:${p.toString(verb)}`;
-	console.log(strLog);
-	if(arr.length > 0){
-		console.table(arr);
-	}
-
-
-}
 
 
 export class StoreController {
 
-	//public static readonly Pool: pg.Pool = und;
-
-
-	public async Get(req: Request, res: Response) {
-		var Client: PoolClient = undefined!;
+	
+	public async Get$(req: Request, res: Response) {
 		var rowsRet: StoreDto[] = [];
 		try {
 
-			let p: PreHandleRequest = new PreHandleRequest(req, res,
+			let p: StoreRequestHandler = new StoreRequestHandler(req, res,
 				'GET',EGuard.Kind | EGuard.Kind);
 
-			if (p.validate() != S.OK) {
+			if (p.Validate() != S.OK) {
 				return;
 			}
 			if (p.db) {
 				rowsRet = p.Store.getMany(p.kind, p.key);
 			} else {
-				Client = await Env.Pool.connect();
+				p.sql = SqlFactory.Get(p.queue, p.kind, p.key);
 
-				const sql = SqlFactory.Get(p.queue, p.kind, p.key);
-				const { rows } = await Client.query(sql);
-				
-				rowsRet = rows?.map(r => {
-					let row = new StoreDto(r);
-					p.Store.setItemR(row);
-					return row;
-				}) || [];
+				await p.Run$();
 
+				p.Dump();
+				rowsRet = p.RowsResult;
 			}
-			logSqlRes('GET', p, rowsRet);
+		
 			if (rowsRet.length > 0) {
 				res.send(rowsRet).status(S.OK).end();
 			} else {
@@ -65,12 +39,8 @@ export class StoreController {
 
 			}
 
-			//TODO if p.Key exists = Action on one row
 		} catch (error) {
 			res.status(400).send(error);
-		}
-		finally {
-			Client?.release();
 		}
 	}
 
@@ -80,54 +50,33 @@ export class StoreController {
 	/// Returns old deleted rows;
 	//==============================================================
 
-	public async Delete(req: Request, res: Response) {
-		var Client: PoolClient = undefined!;
-		var rowsOldRetCached: StoreDto[] = [];
-		var rowsRet: StoreDto[] = [];
-
+	public async Delete$(req: Request, res: Response) {
+		var rowsOld: StoreDto[] = [];
+		
 		try {
 
-			let p: PreHandleRequest = new PreHandleRequest(req, res,
+			let p: StoreRequestHandler = new StoreRequestHandler(req, res,
 				'DELETE',EGuard.Kind | EGuard.Kind);
-			rowsOldRetCached = p.Store.getMany(p.kind, p.key);
+			rowsOld = p.Store.getMany(p.kind, p.key);
 
-			if (p.validate() != S.OK) {
+			if (p.Validate() != S.OK) {
 				return;
 			}
 			if (!p.isAdmin && !p.oneRow) {
-				res.send('User has no acess rights for group DELETE operation')
+				res.send('Tis user has no acess rights for group DELETE operation')
 					.sendStatus(S.FORBIDDEN).end();
 				return;
 			}
-			//TBD delete allways done on
-
-			Client = await Env.Pool.connect();
-
-
-			const sql = SqlFactory.Get(p.queue, p.kind, p.key);
-			const { rows } = await Client.query(sql);
-
-			rowsRet = rows?.map(r => {
-				let row = new StoreDto(r);
-				p.Store.removeItemR(row);
-				return row;
-			});
-
-			//For synchro only !!!!	may be odd operation but need
-
-			rowsOldRetCached?.forEach(r => p.Store.removeItemR(r));
-
-			logSqlRes('DELETE', p, rowsRet);
-			if (rowsRet.length > 0) {
-				res.send(rowsRet).status(S.OK).end();
+			if (rowsOld.length > 0) {
+				res.send(rowsOld).status(S.OK).end();
 			} else {
-				res.send(rowsRet).sendStatus(S.NOT_FOUND).end();
+				res.sendStatus(S.NOT_FOUND).end();
+  			}
 
-			}
-
-			//TODO if p.Key exists = Action on one row
+			p.sql = SqlFactory.Delete(p.queue, p.kind, p.key);
+			TaskMachine.EnqueueTask(p);
 		} catch (error) {
-			res.status(400).send(error);
+		res.status(400).send(error);
 		}
 		finally {
 			Client?.release();
@@ -139,12 +88,12 @@ export class StoreController {
 	/// Returns old deleted rows;
 	//==============================================================
 
-	public async Insert(req: Request, res: Response) {
-	
-		let p: PreHandleRequest = new PreHandleRequest(req, res,
+	public async Insert$(req: Request, res: Response) {
+
+		let p: StoreRequestHandler = new StoreRequestHandler(req, res,
 			'INSERT', EGuard.Kind | EGuard.Kind | EGuard.Key | EGuard.Body);
 
-		if (p.validate() != S.OK) {
+		if (p.Validate() != S.OK) {
 			return;
 		}
 		const old = p.Store.setItem(p.kind, p.key, p.row);
@@ -152,32 +101,27 @@ export class StoreController {
 		const status = (old) ? S.CREATED : S.OK;
 
 		res.send([p.row]).sendStatus(status).end();
+		p.sql = SqlFactory.UpsertRow(p.queue, p.row);
+		TaskMachine.EnqueueTask(p);
 
-		try {				//TBD delete allways done on
+	}
 
-			Client = await Env.Pool.connect();
+	public async Update$(req: Request, res: Response) {
 
+		let p: StoreRequestHandler = new StoreRequestHandler(req, res,
+			'UPDATE', EGuard.Kind | EGuard.Kind | EGuard.Key | EGuard.Body);
 
-			const sql = SqlFactory.UpsertRow(p.queue, p.row);
-			const { rows } = await Client.query(sql);
-			const rowsRet: StoreDto[] = rows?.map(r => {
-				let row = new StoreDto()
-			});
-			let status: number = 0;
-			if (rows && rows.length > 0) {
-				rowRet = rows[0];
-				}
-
-		
-			logSqlRes('INSERT', p, rowsRet);
-		
-			//TODO if p.Key exists = Action on one row
-		} catch (error) {
-			res.status(400).send(error);
+		if (p.Validate() != S.OK) {
+			return;
 		}
-		finally {
-			Client?.release();
-		}
+		const old = p.Store.setItem(p.kind, p.key, p.row);
+
+		const status = (old) ? S.CREATED : S.OK;
+	   //This is more relaible to use Upsert !!!!
+		p.sql = SqlFactory.UpsertRow(p.queue, p.row);
+		TaskMachine.EnqueueTask(p);
+		res.send([p.row]).sendStatus(status).end();
+
 	}
 
 }

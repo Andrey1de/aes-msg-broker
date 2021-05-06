@@ -3,12 +3,13 @@ import { AddressInfo } from "net";
 import * as path from 'path';
 import { AppServer } from './servers/app.server';
 import * as Env from './enviro/enviro';
+//import { createIndentedFilter } from "indented-filter";
+//import showdown from "showdown";
+
 const app: EX.Express = EX();
  //Main creation process ---------------
 try {
     const appServer = new AppServer(app);
-
-
 } catch (e) {
     console.error(e);
     process.exit(-1);
@@ -27,6 +28,9 @@ app.set('view engine', 'pug');
 app.use(EX.static(path.join(__dirname, 'public')));
 
 app.get('/', (req: EX.Request, res: EX.Response) => {
+    res.render('index', { title: 'Express' });
+});
+app.get('/help', (req: EX.Request, res: EX.Response) => {
     res.render('index', { title: 'Express' });
 });
 //app.use('/users', users);

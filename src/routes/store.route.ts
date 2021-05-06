@@ -6,13 +6,13 @@ import { StoreController } from '../crud-store/store.controller';
 const router = Router();
 const storeController = new StoreController();
 //Get All Kind Or Kind/key - row
-router.get('/:queue/:kind/:key?', storeController.Get);
+router.get('/:queue/:kind/:key?', storeController.Get$);
 //Insert(Upsert) Row  Kind/key - row
-router.post('/:queue/:kind/:key', storeController.Upsert);
+router.post('/:queue/:kind/:key', storeController.Insert$);
 //Update existing Row  Kind/key - row
-router.put('/:queue/:kind/:key', storeController.Update);
+router.put('/:queue/:kind/:key', storeController.Update$);
 //Delete All Kind Or Kind/key - row
-router.delete('/:queue/:kind/:key', storeController.Delete);
+router.delete('/:queue/:kind/:key', storeController.Delete$);
 export const StoreRouter = router;
 
 

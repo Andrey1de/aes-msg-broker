@@ -31,50 +31,46 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="routes\root.route.ts" />
     <Content Include=".env" />
     <Content Include=".gitignore" />
+    <Content Include="public\stylesheets\main.css" />
     <Content Include="src\views\error.pug" />
     <Content Include="src\views\index.pug" />
     <Content Include="src\views\layout.pug" />
+    <Content Include="src\views\readme.pug" />
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
-    <Content Include="public\stylesheets\main.css" />
-    <Content Include="README.md" />
+    <Content Include="readme.md" />
+    <Content Include="views\error.pug" />
+    <Content Include="views\index.pug" />
+    <Content Include="views\layout.pug" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="servers\" />
     <Folder Include="public\" />
     <Folder Include="public\javascripts\" />
     <Folder Include="public\stylesheets\" />
-    <Folder Include="routes\" />
     <Folder Include="src\" />
     <Folder Include="src\common\" />
     <Folder Include="src\crud-store\" />
     <Folder Include="src\enviro\" />
     <Folder Include="src\logger\" />
-    <Folder Include="src\logs\" />
     <Folder Include="src\routes\" />
     <Folder Include="src\servers\" />
     <Folder Include="src\views\" />
+    <Folder Include="views\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="routes\logger.route.ts" />
-    <TypeScriptCompile Include="routes\store.route.ts" />
-    <TypeScriptCompile Include="servers\db.server.ts" />
     <TypeScriptCompile Include="src\app.ts" />
     <TypeScriptCompile Include="src\common\e-actions.ts" />
     <TypeScriptCompile Include="src\common\http-status.ts" />
     <TypeScriptCompile Include="src\common\map.utils.ts" />
     <TypeScriptCompile Include="src\crud-store\e-guard.ts" />
-    <TypeScriptCompile Include="src\crud-store\pre-handle-request.ts" />
     <TypeScriptCompile Include="src\crud-store\sql-factory.ts" />
-    <TypeScriptCompile Include="src\crud-store\sql-task-processor.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
     <TypeScriptCompile Include="src\crud-store\store-cache.ts" />
     <TypeScriptCompile Include="src\crud-store\store-dto.ts" />
+    <TypeScriptCompile Include="src\crud-store\store-request-handler.ts" />
     <TypeScriptCompile Include="src\crud-store\store.controller.ts" />
+    <TypeScriptCompile Include="src\crud-store\task-machine.ts" />
     <TypeScriptCompile Include="src\enviro\enviro.ts" />
     <TypeScriptCompile Include="src\logger\logger.ts" />
     <TypeScriptCompile Include="src\routes\env.route.ts" />

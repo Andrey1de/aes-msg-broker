@@ -3,7 +3,6 @@
  */
 import * as EX from 'express';
 import express = require('express');
-//import { Env } from '../enviro/enviro';
 import * as S from '../common/http-status';
  const router: EX.Router = EX.Router();
 router.get('/get/:key?', GetKey);
