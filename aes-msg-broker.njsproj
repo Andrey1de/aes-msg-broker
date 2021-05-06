@@ -13,7 +13,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>5e9f9c70-dcfb-4265-9727-ae4504731a4f</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>dist/app.js</StartupFile>
+    <StartupFile>
+    </StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>dist</WorkingDirectory>
