@@ -4,11 +4,13 @@ export const  BAD_REQUEST = StatusCodes.BAD_REQUEST;
 export const  CREATED = StatusCodes.CREATED;
 export const  CONFLICT = StatusCodes.CONFLICT;
 export const  NOT_FOUND = StatusCodes.NOT_FOUND;
-export const  NOT_IMPLEMENTED = StatusCodes.NOT_IMPLEMENTED;
-export const  NOT_MODIFIED =  StatusCodes.NOT_MODIFIED;
+export const  NOT_IMPLEMENTED = StatusCodes.NOT_IMPLEMENTED; //501
+export const NOT_MODIFIED = StatusCodes.NOT_MODIFIED;//NOT_MODIFIED
 export const  NO_CONTENT = StatusCodes.NO_CONTENT;
 export const  IM_A_TEAPOT = StatusCodes.IM_A_TEAPOT;
-export const  PRECONDITION_FAILED = 412;//StatusCodes.PRECONDITION_FAILED;
+export const PRECONDITION_FAILED = 412;//StatusCodes.PRECONDITION_FAILED;
+export const FORBIDDEN = StatusCodes.FORBIDDEN;//403//StatusCodes.PRECONDITION_FAILED;
+
 
 export function StrStatus(status: number) {
 	switch (status) {
