@@ -21,7 +21,7 @@ export class StoreController {
 			if (p.Validate() != S.OK) {
 				return;
 			}
-			if (p.db) {
+			if (!p.db) {
 				rowsRet = p.Store.getMany(p.kind, p.key);
 			} else {
 				p.sql = SqlFactory.Get(p.queue, p.kind, p.key);
@@ -40,7 +40,7 @@ export class StoreController {
 			}
 
 		} catch (error) {
-			res.status(400).send(error);
+			res.status(S.CONFLICT).send(error);
 		}
 	}
 
@@ -76,10 +76,7 @@ export class StoreController {
 			p.sql = SqlFactory.Delete(p.queue, p.kind, p.key);
 			TaskMachine.EnqueueTask(p);
 		} catch (error) {
-		res.status(400).send(error);
-		}
-		finally {
-			Client?.release();
+			res.status(S.CONFLICT).send(error);
 		}
 	}
 	///============================================================
@@ -90,20 +87,26 @@ export class StoreController {
 
 	public async Insert$(req: Request, res: Response) {
 
-		let p: StoreRequestHandler = new StoreRequestHandler(req, res,
-			'INSERT', EGuard.Kind | EGuard.Kind | EGuard.Key | EGuard.Body);
+		try {
+			let p: StoreRequestHandler = new StoreRequestHandler(req, res,
+				'INSERT', EGuard.Kind | EGuard.Kind | EGuard.Key | EGuard.Body);
 
-		if (p.Validate() != S.OK) {
-			return;
+			if (p.Validate() != S.OK) {
+				return;
+			}
+			const old = p.Store.setItem(p.kind, p.key, p.row);
+
+			const status = (old) ? S.CREATED : S.OK;
+
+			p.sql = SqlFactory.UpsertRow(p.queue, p.row);
+			TaskMachine.EnqueueTask(p);
+			res.send([p.row]).sendStatus(status).end();
+
+		} catch (error) {
+			res.status(S.CONFLICT).send(error);
+
 		}
-		const old = p.Store.setItem(p.kind, p.key, p.row);
-
-		const status = (old) ? S.CREATED : S.OK;
-
-		res.send([p.row]).sendStatus(status).end();
-		p.sql = SqlFactory.UpsertRow(p.queue, p.row);
-		TaskMachine.EnqueueTask(p);
-
+	
 	}
 
 	public async Update$(req: Request, res: Response) {
@@ -111,16 +114,24 @@ export class StoreController {
 		let p: StoreRequestHandler = new StoreRequestHandler(req, res,
 			'UPDATE', EGuard.Kind | EGuard.Kind | EGuard.Key | EGuard.Body);
 
-		if (p.Validate() != S.OK) {
-			return;
-		}
-		const old = p.Store.setItem(p.kind, p.key, p.row);
+		try {
+			if (p.Validate() != S.OK) {
+				return;
+			}
+			const old = p.Store.setItem(p.kind, p.key, p.row);
+			
 
-		const status = (old) ? S.CREATED : S.OK;
-	   //This is more relaible to use Upsert !!!!
-		p.sql = SqlFactory.UpsertRow(p.queue, p.row);
-		TaskMachine.EnqueueTask(p);
-		res.send([p.row]).sendStatus(status).end();
+			const status = (old) ? S.CREATED : S.OK;
+			//This is more relaible to use Upsert !!!!
+			p.sql = SqlFactory.UpsertRow(p.queue, p.row);
+			TaskMachine.EnqueueTask(p);
+			res.send([p.row]).sendStatus(status).end();
+		} catch (error) {
+			res.status(S.CONFLICT).send(error);
+
+		}
+
+	
 
 	}
 

@@ -30,8 +30,8 @@ app.use(EX.static(path.join(__dirname, 'public')));
 app.get('/', (req: EX.Request, res: EX.Response) => {
     res.render('index', { title: 'Express' });
 });
-app.get('/help', (req: EX.Request, res: EX.Response) => {
-    res.render('index', { title: 'Express' });
+app.get('/readme', (req: EX.Request, res: EX.Response) => {
+    res.render('readme', { title: 'Express' });
 });
 //app.use('/users', users);
 

@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 export const  OK = StatusCodes.OK;
 export const  BAD_REQUEST = StatusCodes.BAD_REQUEST;
 export const  CREATED = StatusCodes.CREATED;
-export const  CONFLICT = StatusCodes.CONFLICT;
+export const  CONFLICT = StatusCodes.CONFLICT;///409
 export const  NOT_FOUND = StatusCodes.NOT_FOUND;
 export const  NOT_IMPLEMENTED = StatusCodes.NOT_IMPLEMENTED; //501
 export const NOT_MODIFIED = StatusCodes.NOT_MODIFIED;//NOT_MODIFIED

@@ -3,12 +3,12 @@
     "downlevelIteration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "lib": [ "es2017" ],
+    "target": "es2015",
+    "lib": [ "es2017", "DOM" ],
     "module": "commonjs",
     "outDir": "./dist",
     "sourceMap": true,
-    "strict": false,
-    "target": "es2015"
+    "strict": false
   },
   "exclude": [
     "node_modules",

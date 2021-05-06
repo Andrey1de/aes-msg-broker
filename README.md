@@ -10,7 +10,7 @@ action is example of one of queue , may be memory,
 
 # POST - inserts data - /store/action/kind/key , 
 	- body={"jdata":{"item": ...string}[,"store_to": date_string]}
-# UPDATE - upserts data - /store/action/kind/key , 
+# PUT - upserts data - /store/action/kind/key , 
 	- body={"jdata":{"item": ...string}[,"store_to": date_string]}
 
 
